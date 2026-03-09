@@ -126,7 +126,7 @@ export function MemoryDetail({ memory, clientName, onClose, interactive }: Props
                   )}
                   {chatMessages.map((msg, i) => (
                     <div key={i} style={{
-                      maxWidth: '85%', padding: '10px 14px', borderRadius: 12, fontSize: 14, lineHeight: 1.5,
+                      maxWidth: '85%', padding: '10px 14px', fontSize: 14, lineHeight: 1.5,
                       alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
                       background: msg.role === 'user' ? '#7B6BC4' : 'var(--cream)',
                       color: msg.role === 'user' ? 'white' : 'var(--charcoal)',
