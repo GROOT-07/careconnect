@@ -28,11 +28,10 @@ export default async function CaregiverDashboard() {
   const todayBookings = clients.flatMap(c => c.bookings)
 
   const schedule = todayBookings.map(b => ({
-    time: new Date(b.scheduledAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-    title: b.serviceType.replace(/_/g, ' '),
-    client: clients.find(c => c.id === b.clientId)?.name || '',
-    status: b.status,
     id: b.id,
+    text: `${b.serviceType.replace(/_/g, ' ')} — ${clients.find(c => c.id === b.clientId)?.name || ''}`,
+    time: new Date(b.scheduledAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+    done: b.status === 'COMPLETED',
   }))
 
   return (
