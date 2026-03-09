@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFCF8;
+  }
+  * { @apply border-light-gray; }
+  body { @apply bg-cream text-[#2C2825] font-sans antialiased; }
+  h1, h2, h3, .font-display { font-family: 'Fraunces', serif; }
+}
+
+@layer components {
+  .card { @apply bg-white rounded-2xl p-6 shadow-sm border border-light-gray/60; }
+  .card-sm { @apply bg-white rounded-xl p-4 shadow-sm border border-light-gray/60; }
+  .btn-primary { @apply bg-sage-dark text-white px-6 py-3 rounded-full font-medium text-sm transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sage-dark/30 active:scale-95; }
+  .btn-secondary { @apply bg-transparent text-[#2C2825] border border-light-gray px-6 py-3 rounded-full text-sm transition-all hover:border-sand hover:bg-cream; }
+  .btn-danger { @apply bg-terra text-white px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-90; }
+  .input { @apply w-full bg-cream border border-light-gray rounded-xl px-4 py-3 text-sm outline-none focus:border-sage transition-colors placeholder:text-sand; }
+  .label { @apply block text-xs font-medium text-warm-gray uppercase tracking-wide mb-2; }
+  .pill { @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium; }
+  .section-title { @apply font-fraunces text-2xl font-medium text-[#2C2825] tracking-tight mb-1; }
+  .section-sub { @apply text-sm text-warm-gray font-light mb-6; }
+  .dash-nav { @apply h-16 flex items-center justify-between px-8 bg-white border-b border-light-gray sticky top-0 z-50; }
+  .stat-card { @apply card flex flex-col gap-1; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D4B896; border-radius: 9999px; }
+
+/* Animations */
+.animate-stagger > * { animation: slideUp 0.4s ease both; }
+.animate-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0 } to { opacity:1 } }

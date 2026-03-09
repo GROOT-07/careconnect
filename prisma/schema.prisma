@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Role: FAMILY | CAREGIVER | PATIENT | ADMIN
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String
+  role          String    @default("FAMILY")
+  avatarInitial String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  clientAsFamily   Client[]   @relation("FamilyContact")
+  clientAsPatient  Client?    @relation("PatientUser")
+  caregiverProfile Caregiver?
+  sessions         Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// status: ACTIVE | INACTIVE | MONITORING | PRIORITY
+model Client {
+  id               String     @id @default(cuid())
+  name             String
+  age              Int
+  conditions       String
+  dietaryNotes     String?
+  careNotes        String?
+  emergencyContact String?
+  status           String     @default("ACTIVE")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  familyContactId     String?
+  familyContact       User?      @relation("FamilyContact", fields: [familyContactId], references: [id])
+  patientUserId       String?    @unique
+  patientUser         User?      @relation("PatientUser", fields: [patientUserId], references: [id])
+  assignedCaregiverId String?
+  assignedCaregiver   Caregiver? @relation(fields: [assignedCaregiverId], references: [id])
+
+  bookings     Booking[]
+  activityLogs ActivityLog[]
+  memories     Memory[]
+  moodCheckins MoodCheckin[]
+  medications  Medication[]
+  messages     Message[]
+}
+
+model Caregiver {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  specialties String?
+  rating      Float    @default(5.0)
+  isOnDuty    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  clients      Client[]
+  bookings     Booking[]
+  activityLogs ActivityLog[]
+  availability Availability[]
+}
+
+// serviceType: MORNING_CARE | PERSONAL_CARE | MEDICATION | MEAL_PREP | COMPANIONSHIP | DOCTOR_ESCORT | EVENING_ROUTINE
+// status: PENDING | CONFIRMED | COMPLETED | CANCELLED
+model Booking {
+  id           String     @id @default(cuid())
+  clientId     String
+  client       Client     @relation(fields: [clientId], references: [id])
+  caregiverId  String?
+  caregiver    Caregiver? @relation(fields: [caregiverId], references: [id])
+  serviceType  String
+  scheduledAt  DateTime
+  durationMins Int        @default(60)
+  status       String     @default("PENDING")
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Availability {
+  id          String    @id @default(cuid())
+  caregiverId String
+  caregiver   Caregiver @relation(fields: [caregiverId], references: [id])
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  isAvailable Boolean   @default(true)
+}
+
+// activityType: MEDICATION_GIVEN | PERSONAL_CARE | MEAL_PREPARED | COMPANIONSHIP | EXERCISE | DOCTOR_VISIT | GENERAL
+model ActivityLog {
+  id           String    @id @default(cuid())
+  clientId     String
+  client       Client    @relation(fields: [clientId], references: [id])
+  caregiverId  String?
+  caregiver    Caregiver? @relation(fields: [caregiverId], references: [id])
+  activityType String
+  title        String?
+  notes        String?
+  completedAt  DateTime  @default(now())
+}
+
+model Memory {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+  title       String
+  year        Int?
+  category    String?
+  description String
+  aiEnhanced  String?
+  color1      String?
+  color2      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  chatHistory MemoryChat[]
+}
+
+model MemoryChat {
+  id        String   @id @default(cuid())
+  memoryId  String
+  memory    Memory   @relation(fields: [memoryId], references: [id])
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model MoodCheckin {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  mood      String
+  emoji     String?
+  notes     String?
+  checkedAt DateTime @default(now())
+}
+
+model Medication {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  name      String
+  dosage    String
+  frequency String
+  timeOfDay String
+  isActive  Boolean  @default(true)
+  logs      MedLog[]
+}
+
+model MedLog {
+  id             String     @id @default(cuid())
+  medicationId   String
+  medication     Medication @relation(fields: [medicationId], references: [id])
+  administeredAt DateTime   @default(now())
+  administeredBy String?
+  notes          String?
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  senderId  String
+  senderName String
+  content   String
+  sentAt    DateTime @default(now())
+  isOwn     Boolean  @default(false)
+}
