@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
@@ -40,16 +41,14 @@ export function LandingPage() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-      const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Login failed'); return }
-      const routes: Record<string, string> = { ADMIN: '/admin', FAMILY: '/family', CAREGIVER: '/caregiver', PATIENT: '/patient' }
-      toast(`Welcome back, ${data.user.name?.split(' ')[0]}! 🌿`)
-      router.push(routes[data.user.role] || '/family')
+      const result = await signIn('credentials', { email, password, redirect: false })
+      if (result?.error) { setError('Invalid email or password'); return }
+      // Fetch session to get role
+      const res = await fetch('/api/auth/session')
+      const session = await res.json()
+      const role = session?.user?.role
+      const routes: Record<string, string> = { ADMIN: '/dashboard/admin', FAMILY: '/dashboard/family', CAREGIVER: '/dashboard/caregiver', PATIENT: '/dashboard/patient' }
+      router.push(routes[role] || '/dashboard/family')
     } finally {
       setLoading(false)
     }
