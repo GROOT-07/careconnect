@@ -15,9 +15,9 @@ const roles = [
 ]
 
 const demoCredentials: Record<string, { email: string; password: string }> = {
-  family: { email: 'sarah@example.com', password: 'family123' },
+  family: { email: 'sarah@family.com', password: 'family123' },
   caregiver: { email: 'maria@careconnect.com', password: 'caregiver123' },
-  patient: { email: 'eleanor@example.com', password: 'patient123' },
+  patient: { email: 'eleanor@patient.com', password: 'patient123' },
   admin: { email: 'admin@careconnect.com', password: 'admin123' },
 }
 
